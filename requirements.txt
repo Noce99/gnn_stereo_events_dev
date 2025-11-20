@@ -1,0 +1,7 @@
+h5py
+numba
+hdf5plugin
+torch
+torch_geometric
+opencv-python
+scikit-learn
