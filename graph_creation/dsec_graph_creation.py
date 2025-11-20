@@ -204,7 +204,6 @@ def stereo_event_graph_creation(neighbors, sequence_folder_path = "/media/enrico
 
 
 def stereo_event_graph_creation_with_gui(time_window_us, neighbors, sequence_folder_path = "/media/enrico/Enrico_Datasets/dsec/train/interlaken_00_c"):
-    back_ground = np.ones((HEIGHT, WIDTH*2, 3)) * 255
     image = np.ones((HEIGHT, WIDTH*2, 3)) * 255
 
     font = cv2.FONT_HERSHEY_SIMPLEX
@@ -215,8 +214,16 @@ def stereo_event_graph_creation_with_gui(time_window_us, neighbors, sequence_fol
     processed_left_events = 0
     processed_right_events = 0
 
-    def draw(event_grap : EventGraph):
-        image[:, :] = back_ground[:, :]
+    def draw(set : EventSet, event_grap : EventGraph):
+        image[:, :] = (255, 255, 255)
+
+        def draw_event_set(set : EventSet):
+            for point in set.events:
+                if point[0] == 0:
+                    image[point[3], point[2]] = (255, 0, 0)
+                else:
+                    image[point[3], point[2]] = (0, 0, 255)
+
         def draw_event_graph(event_graph : EventGraph):
             if event_grap.vertices is not None:
                 if event_graph.event.p:
@@ -233,6 +240,7 @@ def stereo_event_graph_creation_with_gui(time_window_us, neighbors, sequence_fol
                         1
                     )
 
+        draw_event_set(set)
         draw_event_graph(event_grap)
 
         # Bottom left corner
@@ -267,21 +275,17 @@ def stereo_event_graph_creation_with_gui(time_window_us, neighbors, sequence_fol
         if event.left_right == "left":
             processed_left_events += 1
             set.add(event)
-            if event.p:
-                back_ground[event.y, event.x] = (255, 0, 0)
-            else:
-                back_ground[event.y, event.x] = (0, 0, 255)
+            
         else:
             processed_right_events += 1
-            if event.p:
+            """if event.p:
                 back_ground[event.y, event.x + WIDTH] = (255, 0, 0)
             else:
-                back_ground[event.y, event.x + WIDTH] = (0, 0, 255)
-            if processed_right_events % 50 == 0:
-                draw(EventGraph(event, set, neighbors))
+                back_ground[event.y, event.x + WIDTH] = (0, 0, 255)"""
+            draw(set, EventGraph(event, set, neighbors))
 
         if event.t - last_timestamp > time_window_us:
-            back_ground[:, :] = (255, 255, 255)
+            # back_ground[:, :] = (255, 255, 255)
             last_timestamp = event.t
         
     
