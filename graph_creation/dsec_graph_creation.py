@@ -203,7 +203,7 @@ def stereo_event_graph_creation(neighbors, sequence_folder_path = "/media/enrico
             graph = EventGraph(event, set, neighbors = neighbors)
 
 
-def stereo_event_graph_creation_with_gui(time_window_us, neighbors, sequence_folder_path = "/media/enrico/Enrico_Datasets/dsec/train/interlaken_00_c"):
+def stereo_event_graph_creation_with_gui(time_window_us, neighbors, how_many_right_events_per_draw = 100, sequence_folder_path = "/media/enrico/Enrico_Datasets/dsec/train/interlaken_00_c"):
     image = np.ones((HEIGHT, WIDTH*2, 3)) * 255
 
     font = cv2.FONT_HERSHEY_SIMPLEX
@@ -282,7 +282,8 @@ def stereo_event_graph_creation_with_gui(time_window_us, neighbors, sequence_fol
                 back_ground[event.y, event.x + WIDTH] = (255, 0, 0)
             else:
                 back_ground[event.y, event.x + WIDTH] = (0, 0, 255)"""
-            draw(set, EventGraph(event, set, neighbors))
+            if processed_right_events % how_many_right_events_per_draw == 0:
+                draw(set, EventGraph(event, set, neighbors))
 
         if event.t - last_timestamp > time_window_us:
             # back_ground[:, :] = (255, 255, 255)
